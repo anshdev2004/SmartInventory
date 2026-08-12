@@ -1,0 +1,11 @@
+product_id,name,category,shelf_life_days,base_price,elasticity
+1,Milk,Dairy,10,3.5,1.2
+2,Yogurt,Dairy,14,1.2,1.0
+3,Bread,Bakery,4,2.8,1.5
+4,Croissant,Bakery,3,1.8,1.6
+5,Bananas,Produce,6,0.6,1.3
+6,Tomatoes,Produce,8,2.2,1.1
+7,Lettuce,Produce,5,1.5,1.4
+8,Chicken Breast,Meat,4,6.5,0.9
+9,Ground Beef,Meat,3,7.0,0.8
+10,Canned Beans,Pantry,180,1.0,0.5
