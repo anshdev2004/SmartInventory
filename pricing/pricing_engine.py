@@ -1,4 +1,7 @@
 import numpy as np
+import pandas as pd
+from datetime import datetime
+
 
 def elasticity_demand(Q0: float, P: float, P0: float, epsilon: float) -> float:
     """
@@ -25,12 +28,42 @@ def recommended_price(original_price: float, t_remaining: float, tau: float,
     return round(original_price * (1 - discount), 2)
 
 
-if __name__ == "__main__":
-    # Quick manual test — bread, 4-day shelf life, original price $2.80
-    original_price = 2.80
-    tau = 4
+def generate_markdown_sheet(D_max: float = 0.5, alpha: float = 1.2):
+    """
+    Reads products.csv and batches.csv, and calculates a recommended
+    markdown price for every batch currently in stock.
+    """
+    products = pd.read_csv("data/products.csv")
+    batches = pd.read_csv("data/batches.csv")
 
-    print("Bread (4-day shelf life, $2.80 original price):")
-    for days_left in [4, 3, 2, 1, 0]:
-        price = recommended_price(original_price, days_left, tau, D_max=0.5, alpha=1.2)
-        print(f"  {days_left} days left -> recommended price: ${price}")
+    batches["expiry_date"] = pd.to_datetime(batches["expiry_date"])
+    today = pd.Timestamp(datetime.today().date())
+
+    merged = batches.merge(products, on="product_id")
+
+    results = []
+    for _, row in merged.iterrows():
+        days_left = (row["expiry_date"] - today).days
+        price = recommended_price(
+            original_price=row["original_price"],
+            t_remaining=days_left,
+            tau=row["shelf_life_days"],
+            D_max=D_max,
+            alpha=alpha
+        )
+        results.append({
+            "batch_id": row["batch_id"],
+            "product": row["name"],
+            "days_left": days_left,
+            "original_price": row["original_price"],
+            "recommended_price": price,
+            "discount_%": round((1 - price / row["original_price"]) * 100, 1)
+        })
+
+    sheet = pd.DataFrame(results).sort_values("days_left")
+    return sheet
+
+
+if __name__ == "__main__":
+    sheet = generate_markdown_sheet()
+    print(sheet.to_string(index=False))
