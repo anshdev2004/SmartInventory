@@ -47,4 +47,5 @@ if __name__ == "__main__":
     print(f"Predicted demand for {tomorrow.strftime('%Y-%m-%d')}:\n")
     for _, prod in products.iterrows():
         demand = predict_demand_for_product(prod["product_id"], tomorrow, model)
-        print(f"  {prod['name']:<15} -> {demand} units")
+        # print(f"  {prod['name']:<15} -> {demand:.if} units")
+        print(f"  {prod['name']:<15} -> {demand:.1f} units")
