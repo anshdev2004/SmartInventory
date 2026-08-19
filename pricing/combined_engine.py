@@ -1,4 +1,5 @@
 import pandas as pd
+import sqlite3
 from datetime import datetime
 import sys
 import os
@@ -10,8 +11,11 @@ from ml.predict import load_model, predict_demand_for_product
 
 
 def generate_smart_markdown_sheet(D_max: float = 0.5, alpha: float = 1.2):
-    products = pd.read_csv("data/products.csv")
-    batches = pd.read_csv("data/batches.csv")
+    conn = sqlite3.connect("data/smartinventory.db")
+    products = pd.read_sql("SELECT * FROM products", conn)
+    batches = pd.read_sql("SELECT * FROM batches", conn)
+    conn.close()
+
     batches["expiry_date"] = pd.to_datetime(batches["expiry_date"])
     today = pd.Timestamp(datetime.today().date())
 
